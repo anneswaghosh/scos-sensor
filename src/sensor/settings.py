@@ -21,7 +21,6 @@ BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 REPO_ROOT = path.dirname(BASE_DIR)
 
 FQDN = environ.get('FQDN', 'fqdn.unset')
-print("Booting sensor {}".format(FQDN))
 
 DOCKER_TAG = environ.get('DOCKER_TAG')
 GIT_BRANCH = environ.get('GIT_BRANCH')
@@ -61,6 +60,7 @@ CONFIG_DIR = path.join(REPO_ROOT, 'configs')
 # JSON configs
 SCALE_FACTORS_FILE = path.join(CONFIG_DIR, 'scale_factors.json')
 SENSOR_DEFINITION_FILE = path.join(CONFIG_DIR, 'sensor_definition.json')
+ACTION_DEFINITIONS_DIR = path.join(CONFIG_DIR, 'actions')
 
 # Cleanup any existing healtcheck files
 try:
@@ -70,6 +70,14 @@ except OSError:
 
 # As defined in SigMF
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
+# https://docs.djangoproject.com/en/2.2/ref/settings/#internal-ips If
+# IN_DOCKER, the IP address that needs to go here to enable the debugging
+# toolbar can change each time the bridge network is brought down. It's
+# possible to extract the correct address from an incoming request, so if
+# IN_DOCKER and DEBUG=true, then the `api_v1_root` view will insert the correct
+# IP when the first request comes in.
+INTERNAL_IPS = ['127.0.0.1']
 
 # See /env.template
 if not IN_DOCKER or RUNNING_TESTS:
@@ -145,6 +153,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_yasg',  # OpenAPI generator
     'raven.contrib.django.raven_compat',
+    'debug_toolbar',
     # project-local apps
     'acquisitions.apps.AcquisitionsConfig',
     'authentication.apps.AuthenticationConfig',
@@ -158,6 +167,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -214,6 +224,7 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': DATETIME_FORMAT,
     'DATETIME_INPUT_FORMATS': ('iso-8601', ),
     'COERCE_DECIMAL_TO_STRING': False,  # DecimalField should return floats
+    'URL_FIELD_NAME': 'self'  # RFC 42867
 }
 
 
@@ -271,6 +282,8 @@ if not IN_DOCKER:
 
 # Ensure only the last MAX_TASK_RESULTS results are kept per schedule entry
 MAX_TASK_RESULTS = 100
+# Display at most MAX_TASK_QUEUE upcoming tasks in the status endpoint
+MAX_TASK_QUEUE = 100
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
