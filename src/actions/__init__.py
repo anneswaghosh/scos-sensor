@@ -19,8 +19,24 @@ registered_actions = {
 
 single_freq_ffts = [
     {
-        "name": "acquire_700c_dl",
+        "name": "M4_Verizon_Downlink",
         "frequency": 751e6,
+        "sample_rate": 15.36e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_Verizon_Uplink",
+        "frequency": 782e6,
+        "sample_rate": 15.36e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_ATT_Uplink",
+        "frequency": 709e6,
         "sample_rate": 15.36e6,
         "gain": 40,
         "fft_size": 1024,
