@@ -42,6 +42,62 @@ single_freq_ffts = [
         "fft_size": 1024,
         "nffts": 300
     },
+    {
+        "name": "M4_ATT_Downlink",
+        "frequency": 739e6,
+        "sample_rate": 15.36e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_TMobile_Uplink",
+        "frequency": 700.5e6,
+        "sample_rate": 7.68e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_TMobile_Downlink",
+        "frequency": 731.5e6,
+        "sample_rate": 7.68e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_FirstNet_Uplink",
+        "frequency": 793e6,
+        "sample_rate": 15.36e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_FirstNet_Downlink",
+        "frequency": 763e6,
+        "sample_rate": 15.36e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_PublicSafetyNB_Uplink",
+        "frequency": 802e6,
+        "sample_rate": 7.68e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
+    {
+        "name": "M4_PublicSafetyNB_Downlink",
+        "frequency": 772e6,
+        "sample_rate": 7.68e6,
+        "gain": 40,
+        "fft_size": 1024,
+        "nffts": 300
+    },
     # Add more single-frequency FFT acquisitions here
     # {
     #     "name": "acquire_aws1_dl",
