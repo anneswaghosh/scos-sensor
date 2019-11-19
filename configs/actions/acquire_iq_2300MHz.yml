@@ -1,0 +1,10 @@
+stepped_frequency_time_domain_iq:
+  name: acquire_iq_2300MHz
+  fcs:
+    - 2340e6
+  gains:
+    - 40
+  sample_rates:
+    - 50e6
+  durations_ms:
+    - 100

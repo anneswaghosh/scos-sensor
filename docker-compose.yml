@@ -54,6 +54,11 @@ services:
     extra_hosts:
       - "${MANAGER_FQDN}:${MANAGER_IP}"
     command: /entrypoints/api_entrypoint.sh
+    ports:
+      - 5005:5005
+      - 4444:4444
+    stdin_open: true
+    tty: true
 
   nginx:
     image: smsntia/nginx:${DOCKER_TAG} # DOCKER_TAG will always be 'latest' for GitHub source

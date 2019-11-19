@@ -45,6 +45,7 @@ import logging
 from itertools import zip_longest
 
 import numpy as np
+import remote_pdb
 from django.core.files.base import ContentFile
 from sigmf.sigmffile import SigMFFile
 
@@ -109,6 +110,7 @@ class SteppedFrequencyTimeDomainIqAcquisition(Action):
 
         for recording_id, fc in enumerate(self.fcs, start=1):
             data, sigmf_md = self.acquire_data(fc, task_id)
+            remote_pdb.set_trace(host='0.0.0.0', port=4444)
             self.archive(task_result, recording_id, data, sigmf_md)
 
     def test_required_components(self):

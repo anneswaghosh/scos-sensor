@@ -18,5 +18,5 @@ echo "Creating superuser (if managed)"
 python3 /scripts/create_superuser.py
 
 echo "Starting Gunicorn"
-exec gunicorn sensor.wsgi -c ../gunicorn/config.py &
+exec gunicorn sensor.wsgi -t 3600 -c ../gunicorn/config.py &
 wait
