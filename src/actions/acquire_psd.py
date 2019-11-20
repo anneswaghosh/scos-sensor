@@ -45,6 +45,7 @@ import logging
 from itertools import zip_longest
 
 import numpy as np
+import scipy.signal
 import remote_pdb
 from django.core.files.base import ContentFile
 from sigmf.sigmffile import SigMFFile
@@ -76,7 +77,7 @@ class PsdAcquisition(Action):
     """
 
     def __init__(self, name, fcs, gains, sample_rates, durations_ms):
-        super(SteppedFrequencyTimeDomainIqAcquisition, self).__init__()
+        super(PsdAcquisition, self).__init__()
 
         nfcs = len(fcs)
 
@@ -110,7 +111,6 @@ class PsdAcquisition(Action):
 
         for recording_id, fc in enumerate(self.fcs, start=1):
             data, sigmf_md = self.acquire_data(fc, task_id)
-            remote_pdb.set_trace(host='0.0.0.0', port=4444)
             self.archive(task_result, recording_id, data, sigmf_md)
 
     def test_required_components(self):
@@ -154,7 +154,9 @@ class PsdAcquisition(Action):
         # Drop ~10 ms of samples
         nskip = int(0.01 * sample_rate)
         acq = self.sdr.radio.acquire_samples(nsamps, nskip=nskip).astype(np.complex64)
-        data = np.append(data, acq)
+        psd, labels = self.psd_welch (2**9, acq, fc, sample_rate)
+        data = np.append(data, psd)
+
         capture_md = {"core:frequency": fc, "core:datetime": dt}
         sigmf_md.add_capture(start_index=0, metadata=capture_md)
         calibration_annotation_md = self.sdr.radio.create_calibration_annotation()
@@ -163,6 +165,28 @@ class PsdAcquisition(Action):
         )
 
         return data, sigmf_md
+
+    def psd_welch (self, nfft, samples, center_freq, Fs=30.72e6):
+      """ use welch's method to estimate PSD
+      """
+      labels0, psd0lin = scipy.signal.welch(samples, Fs, nperseg=nfft, return_onesided=False)
+
+      psd0 = np.nan_to_num(10.0 * np.log10(psd0lin))
+      labels0 = labels0 + center_freq
+
+      # put DC in the center
+      psd0 = np.fft.fftshift(psd0)
+      labels0 = np.fft.fftshift(labels0)
+
+    
+      # reject samples above cutoff
+      # * (high frequencies are near fn=f/Fs=-0.5 and 0.5
+      #    or rather the beginning and end of an FFT-shifted array)
+      #psd = psd[:, n_remove:-n_remove]
+      #labels = labels[:, n_remove:-n_remove]
+
+      return psd0, labels0
+
 
     def configure_sdr(self, fc, gain, sample_rate, duration_ms):
         self.set_sdr_sample_rate(sample_rate)

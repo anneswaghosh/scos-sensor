@@ -16,6 +16,7 @@ import logging
 from os import path
 
 import numpy as np
+import remote_pdb
 
 from hardware import calibration
 from hardware.mocks.usrp_block import MockUsrp
@@ -294,6 +295,7 @@ class RadioInterface(object):
                 [0],  # channel list
                 self.gain,  # gain in dB
             )
+            remote_pdb.set_trace(host='0.0.0.0', port=4444)
             # usrp.recv_num_samps returns a numpy array of shape
             # (n_channels, n_samples) and dtype complex64
             assert samples.dtype == np.complex64
