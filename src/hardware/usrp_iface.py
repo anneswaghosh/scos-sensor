@@ -272,6 +272,7 @@ class RadioInterface(object):
     def acquire_samples(self, n, nskip=0, retries=5):  # -> np.ndarray:
         """Aquire nskip+n samples and return the last n"""
 
+        #remote_pdb.set_trace(host='0.0.0.0', port=4444)
         # Get the calibration data for the acquisition
         self.recompute_calibration_data()
 
@@ -295,7 +296,7 @@ class RadioInterface(object):
                 [0],  # channel list
                 self.gain,  # gain in dB
             )
-            remote_pdb.set_trace(host='0.0.0.0', port=4444)
+            #remote_pdb.set_trace(host='0.0.0.0', port=4444)
             # usrp.recv_num_samps returns a numpy array of shape
             # (n_channels, n_samples) and dtype complex64
             assert samples.dtype == np.complex64

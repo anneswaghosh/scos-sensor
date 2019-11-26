@@ -47,6 +47,7 @@ from itertools import zip_longest
 import numpy as np
 import scipy.signal
 import remote_pdb
+import matplotlib.pyplot as plt
 from django.core.files.base import ContentFile
 from sigmf.sigmffile import SigMFFile
 
@@ -120,6 +121,14 @@ class PsdAcquisition(Action):
             msg = "acquisition failed: SDR required but not available"
             raise RuntimeError(msg)
 
+    def plot_psd (self, psd, freq):
+       plt.semilogy(freq, psd)
+       plt.ylim([0.5e-3, 1])
+       plt.xlabel('frequency [Hz]')
+       plt.ylabel('PSD [V**2/Hz]')
+       plt.show() 
+
+
     def acquire_data(self, fc, task_id):
         tuning_parameters = self.tuning_parameters[fc]
         self.configure_sdr(fc, **tuning_parameters)
@@ -156,6 +165,9 @@ class PsdAcquisition(Action):
         acq = self.sdr.radio.acquire_samples(nsamps, nskip=nskip).astype(np.complex64)
         psd, labels = self.psd_welch (2**9, acq, fc, sample_rate)
         data = np.append(data, psd)
+
+        remote_pdb.set_trace(host='0.0.0.0', port=4444)
+        self.plot_psd (psd, labels)
 
         capture_md = {"core:frequency": fc, "core:datetime": dt}
         sigmf_md.add_capture(start_index=0, metadata=capture_md)
