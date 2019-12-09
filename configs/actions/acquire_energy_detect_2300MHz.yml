@@ -1,0 +1,10 @@
+energy_detection:
+  name: acquire_energy_detect_2300MHz
+  fcs:
+    - 2340e6
+  gains:
+    - 40
+  sample_rates:
+    - 50e6
+  durations_ms:
+    - 100

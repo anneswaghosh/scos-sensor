@@ -9,6 +9,7 @@ from . import logger as logger_action
 from .acquire_single_freq_fft import SingleFrequencyFftAcquisition
 from .acquire_stepped_freq_tdomain_iq import SteppedFrequencyTimeDomainIqAcquisition
 from .acquire_psd import PsdAcquisition 
+from .acquire_energy_detection import EnergyDetectionAcquisition 
 from .monitor_usrp import UsrpMonitor
 from .sync_gps import SyncGps
 
@@ -37,6 +38,7 @@ action_classes = {
     "single_frequency_fft": SingleFrequencyFftAcquisition,
     "stepped_frequency_time_domain_iq": SteppedFrequencyTimeDomainIqAcquisition,
     "psd":PsdAcquisition,
+    "energy_detection":EnergyDetectionAcquisition,
 }
 
 

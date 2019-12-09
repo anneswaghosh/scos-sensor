@@ -46,6 +46,7 @@ from itertools import zip_longest
 
 import numpy as np
 import scipy.signal
+from scipy.stats import norm
 import remote_pdb
 import pickle
 import matplotlib.pyplot as plt
@@ -67,7 +68,7 @@ GLOBAL_INFO = {
 }
 
 
-class PsdAcquisition(Action):
+class EnergyDetectionAcquisition(Action):
     """Acquire Welch PSD data at each of the requested frequecies.
 
     :param name: the name of the action
@@ -79,7 +80,7 @@ class PsdAcquisition(Action):
     """
 
     def __init__(self, name, fcs, gains, sample_rates, durations_ms):
-        super(PsdAcquisition, self).__init__()
+        super(EnergyDetectionAcquisition, self).__init__()
 
         nfcs = len(fcs)
 
@@ -165,10 +166,26 @@ class PsdAcquisition(Action):
         # Drop ~10 ms of samples
         nskip = int(0.01 * sample_rate)
         acq = self.sdr.radio.acquire_samples(nsamps, nskip=nskip).astype(np.complex64)
-        psd, labels = self.psd_welch (2**9, acq, fc, sample_rate)
-        data = np.append(data, psd)
+        S_xx_welch, freq = self.psd_welch (2**9, acq, fc, sample_rate)
+
+        time_diff = 1/sample_rate
+        df_welch = freq[1] - freq[0]
+        f_fft = np.fft.fftfreq(len(acq), d=time_diff)
+        df_fft = f_fft[1] - f_fft[0]
+
+        E_welch = (1. / time_diff) * (df_welch / df_fft) * np.sum(S_xx_welch)
+
+
+        Xk = np.fft.fft(acq)
+        len_acq = len(acq)
+        E_fft = np.sum(np.abs(Xk) ** 2) / len_acq
+
+        E = np.sum(np.abs(acq)** 2)
 
         remote_pdb.set_trace(host='0.0.0.0', port=4444)
+        data = np.append(data, S_xx_welch)
+
+
         #self.plot_psd (psd, labels)
         #np.savez('psd.npz', psd=psd, freq=labels)i
         #with open('~/anne_scos/scos-sensor/src/actions/test.pkl','wb') as f:

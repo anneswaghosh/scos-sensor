@@ -8,7 +8,7 @@ def plot_psd (psd, freq):
        plt.ylim(-130, -105)
        #plt.yscale('symlog')
        plt.xlabel('frequency [Hz]')
-       plt.ylabel('PSD [V**2/Hz]')
+       plt.ylabel('PSD [dB]')
        plt.grid(True)
        plt.show()
 
